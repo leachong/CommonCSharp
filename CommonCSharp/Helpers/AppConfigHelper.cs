@@ -44,7 +44,7 @@ namespace CommonCSharp.Helpers
             }
             if (_dicSetting.ContainsKey(key))
             {
-                var result = _dicSetting[key];
+                var result = _dicSetting[key] as string;
                 return result;
             }
             else
@@ -72,7 +72,7 @@ namespace CommonCSharp.Helpers
                 SaveSetting(key.ToString(), value.ToString());
             }
         }
-        
+
         void LoadSetting(string key)
         {
             var config = GetConfig();

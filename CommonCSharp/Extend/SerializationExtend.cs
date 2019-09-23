@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Newtonsoft.Json;
+using System;
 using System.IO;
-using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
-using Newtonsoft.Json;
 
 namespace CommonCSharp.Extend
 {
@@ -20,13 +19,14 @@ namespace CommonCSharp.Extend
         /// <returns></returns>  
         public static string Serialize(this object o, SerializationFormat format)
         {
-            if (format == SerializationFormat.Xml)
+            switch (format)
             {
-                return SerializationExtend.XmlSerialize(o);
-            }
-            else
-            {
-                return SerializationExtend.JsonSerialize(o);
+                case SerializationFormat.Xml:
+                    return SerializationExtend.XmlSerialize(o);
+                case SerializationFormat.Json:
+                    return SerializationExtend.JsonSerialize(o);
+                default:
+                    throw new ArgumentException();
             }
         }
 
@@ -39,13 +39,14 @@ namespace CommonCSharp.Extend
         /// <returns></returns>  
         public static T Deserialize<T>(this string s, SerializationFormat format)
         {
-            if (format == SerializationFormat.Xml)
+            switch (format)
             {
-                return SerializationExtend.XmlDeserialize<T>(s);
-            }
-            else
-            {
-                return SerializationExtend.JsonDeserialize<T>(s);
+                case SerializationFormat.Xml:
+                    return SerializationExtend.XmlDeserialize<T>(s);
+                case SerializationFormat.Json:
+                    return SerializationExtend.JsonDeserialize<T>(s);
+                default:
+                    throw new ArgumentException();
             }
         }
         /// <summary>  
@@ -58,13 +59,16 @@ namespace CommonCSharp.Extend
         /// <returns></returns>  
         public static bool SerializableFile(this object t, string path, SerializationFormat format)
         {
-            if (format == SerializationFormat.Xml)
+            switch (format)
             {
-                return SerializationExtend.SerializableXML(t, path);
-            }
-            else
-            {
-                return SerializationExtend.SerializableJson(t, path);
+                case SerializationFormat.Xml:
+                    return SerializationExtend.SerializableXML(t, path);
+                case SerializationFormat.Json:
+                    return SerializationExtend.SerializableJson(t, path);
+                case SerializationFormat.Binary:
+                    return SerializationExtend.SerializableBinary(t, path);
+                default:
+                    throw new ArgumentException();
             }
         }
         /// <summary>  
@@ -76,13 +80,16 @@ namespace CommonCSharp.Extend
         /// <returns></returns>  
         public static T DeserializeFile<T>(this string path, SerializationFormat format)
         {
-            if (format == SerializationFormat.Xml)
+            switch (format)
             {
-                return SerializationExtend.DeSerializableXML<T>(path);
-            }
-            else
-            {
-                return SerializationExtend.DeSerializableJson<T>(path);
+                case SerializationFormat.Xml:
+                    return SerializationExtend.DeSerializableXML<T>(path);
+                case SerializationFormat.Json:
+                    return SerializationExtend.DeSerializableJson<T>(path);
+                case SerializationFormat.Binary:
+                    return SerializationExtend.DeSerializableBinary<T>(path);
+                default:
+                    throw new ArgumentException();
             }
         }
         #endregion
@@ -211,6 +218,44 @@ namespace CommonCSharp.Extend
             return bl;
         }
 
+
+        /// <summary>  
+        /// 将对象序列化成二进制文件  
+        /// </summary>  
+        /// <returns></returns>  
+        private static bool SerializableBinary(object t, string path)
+        {
+            bool bl = false;
+            FileStream fileStream = null;
+            try
+            {
+                if (t != null)
+                {
+                    //创建xml格式器  
+                    BinaryFormatter binary = new BinaryFormatter();
+                    //创建文件流  
+                    fileStream = new FileStream(path, FileMode.Create);
+                    //将对象序列化到流  
+                    binary.Serialize(fileStream, t);
+                    bl = true;
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+            finally
+            {
+                if (fileStream != null)
+                {
+                    fileStream.Close();
+                }
+
+            }
+
+            return bl;
+        }
         #endregion
 
         #region 将文件反序列化成对象  
@@ -284,12 +329,47 @@ namespace CommonCSharp.Extend
             return t;
         }
 
+        /// <summary>  
+        /// 将二进制文件反序列化
+        /// </summary>  
+        /// <typeparam name="T">类型</typeparam>  
+        /// <param name="path">文件路径</param>  
+        /// <returns>实体</returns>  
+        private static T DeSerializableBinary<T>(string path)
+        {
+            T t = default(T);
+            FileStream fileStream = null;
+            try
+            {
+                BinaryFormatter binary = new BinaryFormatter();
+                FileInfo fi = new FileInfo(path);
+
+                if (fi.Exists)
+                {
+                    fileStream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+                    t = (T)binary.Deserialize(fileStream);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                if (fileStream != null)
+                {
+                    fileStream.Close();
+                }
+            }
+            return t;
+        }
         #endregion
     }
 
     public enum SerializationFormat
     {
-        Xml,Json
+        Xml,Json,Binary
     }
 
 }

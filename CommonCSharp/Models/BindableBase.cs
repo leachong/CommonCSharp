@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -10,22 +11,38 @@ namespace CommonCSharp.Models
     [Serializable]
     public abstract class BindableBase : INotifyPropertyChanged
     {
-        #region < OnPropertyChanged >
+        private Dictionary<string, object> dict = new Dictionary<string, object>();
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected virtual void OnPropertyChanged(string pPropertyName)
+        private static string GetProperyName(string methodName)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(pPropertyName));
-        }
-        protected void SetProperty<T>(ref T pField, T pValue, [CallerMemberName] string pPropertyName = "")
-        {
-            if (!EqualityComparer<T>.Default.Equals(pField, pValue))
+            if (methodName.StartsWith("get_") || methodName.StartsWith("set_") ||
+                methodName.StartsWith("put_"))
             {
-                pField = pValue;
-                OnPropertyChanged(pPropertyName);
+                return methodName.Substring("get_".Length);
+            }
+            throw new Exception(methodName + " not a method of Property");
+        }
+
+        protected void SetValue(object value)
+        {
+            string propertyName = GetProperyName(new StackTrace(true).GetFrame(1).GetMethod().Name);
+            dict[propertyName] = value;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        protected object GetValue()
+        {
+            string propertyName = GetProperyName(new StackTrace(true).GetFrame(1).GetMethod().Name);
+            if (dict.ContainsKey(propertyName))
+            {
+                return dict[propertyName];
+            }
+            else
+            {
+                return null;
             }
         }
-        #endregion
+
+        public event PropertyChangedEventHandler PropertyChanged;
     }
 }
