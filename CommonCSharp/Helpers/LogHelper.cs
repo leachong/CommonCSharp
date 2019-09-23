@@ -231,4 +231,25 @@ namespace CommonCSharp.Helpers
         }
 
     }
+
+    public class Log
+    {
+        public static void d(string format, params object[] args)
+        {
+            LogHelper.Instance.d(format, args);
+        }
+        public static void i(string format, params object[] args)
+        {
+            LogHelper.Instance.i(format, args);
+        }
+        public static void w(string format, params object[] args)
+        {
+            LogHelper.Instance.w(format, args);
+        }
+        public static void e(Exception ex, string format, params object[] args)
+        {
+            LogHelper.Instance.e(ex, format, args);
+        }
+    }
+
 }
