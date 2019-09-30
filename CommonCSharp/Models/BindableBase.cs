@@ -23,11 +23,30 @@ namespace CommonCSharp.Models
             throw new Exception(methodName + " not a method of Property");
         }
 
+        protected virtual void OnPropertyChanged(string pPropertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(pPropertyName));
+        }
         protected void SetValue(object value)
         {
             string propertyName = GetProperyName(new StackTrace(true).GetFrame(1).GetMethod().Name);
-            dict[propertyName] = value;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+            if (dict.ContainsKey(propertyName))
+            {
+                if (dict[propertyName] != value)
+                {
+                    if (dict[propertyName] == null || !dict[propertyName].Equals(value))
+                    {
+                        dict[propertyName] = value;
+                        OnPropertyChanged(propertyName);
+                    }
+                }
+            }
+            else
+            {
+                dict.Add(propertyName, value);
+                OnPropertyChanged(propertyName);
+            }
         }
 
         protected object GetValue()

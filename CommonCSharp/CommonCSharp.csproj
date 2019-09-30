@@ -58,6 +58,7 @@
     <Compile Include="Extend\DoubleExtend.cs" />
     <Compile Include="Extend\EnumerableExtend.cs" />
     <Compile Include="Extend\EnumExtend.cs" />
+    <Compile Include="Extend\ExceptionExtend.cs" />
     <Compile Include="Extend\Int32Extend.cs" />
     <Compile Include="Extend\SerializationExtend.cs" />
     <Compile Include="Extend\StringExtend.cs" />

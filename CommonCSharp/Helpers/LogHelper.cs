@@ -132,7 +132,7 @@ namespace CommonCSharp.Helpers
             fileAppender.Name = "RollingFileAppender";
             fileAppender.File = logPath;                                        // 文件名
             fileAppender.MaxSizeRollBackups = -1;                               // 最大变换数量，-1为不限制
-            fileAppender.MaximumFileSize = "10MB";                              // 最大文件大小
+            fileAppender.MaximumFileSize = "50MB";                              // 最大文件大小
             fileAppender.StaticLogFileName = false;
             fileAppender.DatePattern = "yyyy-MM-dd'.log'";
             fileAppender.RollingStyle = RollingFileAppender.RollingMode.Date;   // 以日期改变文件名

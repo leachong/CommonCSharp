@@ -316,7 +316,6 @@ namespace CommonCSharp.Extend
             }
             catch (Exception ex)
             {
-
                 throw ex;
             }
             finally
