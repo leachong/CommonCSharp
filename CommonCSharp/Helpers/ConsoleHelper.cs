@@ -23,6 +23,7 @@ namespace CommonCSharp.Helpers
             var cmd = string.Format("\"{0}\" {1}"
                 , exeFile, arguments);
 
+            l.d(cmd);
             p.StandardInput.AutoFlush = true;
             p.StandardInput.WriteLine(cmd);
             p.StandardInput.WriteLine("exit");
@@ -30,6 +31,12 @@ namespace CommonCSharp.Helpers
             strError = p.StandardError.ReadToEnd();
             p.WaitForExit();
             p.Close();
+        }
+        public static void ExecuteCMD(string exeFile, string arguments)
+        {
+            var output = "";
+            var error = "";
+            ExecuteCMD(exeFile, arguments, ref output, ref error);
         }
     }
 }
