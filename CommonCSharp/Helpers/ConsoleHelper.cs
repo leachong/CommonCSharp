@@ -11,6 +11,7 @@ namespace CommonCSharp.Helpers
         static LogHelper l = new LogHelper(typeof(ConsoleHelper));
         public static void ExecuteCMD(string exeFile, string arguments, ref string strOutput, ref string strError)
         {
+            l.d(string.Format("\"{0}\" {1}", exeFile, arguments));
             var p = new Process();
             p.StartInfo.UseShellExecute = false;
             p.StartInfo.RedirectStandardInput = true;
@@ -22,8 +23,6 @@ namespace CommonCSharp.Helpers
 
             var cmd = string.Format("\"{0}\" {1}"
                 , exeFile, arguments);
-
-            l.d(cmd);
             p.StandardInput.AutoFlush = true;
             p.StandardInput.WriteLine(cmd);
             p.StandardInput.WriteLine("exit");
@@ -32,11 +31,22 @@ namespace CommonCSharp.Helpers
             p.WaitForExit();
             p.Close();
         }
-        public static void ExecuteCMD(string exeFile, string arguments)
+
+        public static void ExecuteExe(string exeFile, string arguments, bool waiting = true)
         {
-            var output = "";
-            var error = "";
-            ExecuteCMD(exeFile, arguments, ref output, ref error);
+            l.d(string.Format("\"{0}\" {1}", exeFile, arguments));
+            using (var process = new Process())
+            {
+                process.StartInfo.UseShellExecute = false;
+                //process.StartInfo.CreateNoWindow = true;
+                process.StartInfo.FileName = exeFile;
+                process.StartInfo.Arguments = arguments;
+                process.Start();
+                if (waiting)
+                {
+                    process.WaitForExit();
+                }
+            }
         }
     }
 }
