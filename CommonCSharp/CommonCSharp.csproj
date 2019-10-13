@@ -87,6 +87,7 @@
     <Compile Include="Helpers\ObjectHelper.cs" />
     <Compile Include="Helpers\Sqlite3Helper.cs" />
     <Compile Include="Models\BindableBase.cs" />
+    <Compile Include="Models\FormItemModel.cs" />
     <Compile Include="Models\PointD.cs" />
     <Compile Include="Models\RectangleD.cs" />
     <Compile Include="Models\SizeD.cs" />
