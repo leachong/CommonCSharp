@@ -38,7 +38,7 @@ namespace CommonCSharp.Helpers
             using (var process = new Process())
             {
                 process.StartInfo.UseShellExecute = false;
-                //process.StartInfo.CreateNoWindow = true;
+                process.StartInfo.CreateNoWindow = true;
                 process.StartInfo.FileName = exeFile;
                 process.StartInfo.Arguments = arguments;
                 process.Start();
