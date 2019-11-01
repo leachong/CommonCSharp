@@ -4,8 +4,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace CommonCSharp.Helpers
 {
@@ -214,6 +216,56 @@ namespace CommonCSharp.Helpers
                 }
             }
             return lstData;
+        }
+        static string http_build_query(Dictionary<string, string> dict = null)
+        {
+            if (dict == null)
+            {
+                return "";
+            }
+            var builder = new UriBuilder();
+            var query = HttpUtility.ParseQueryString(builder.Query);
+            foreach (var item in dict.Keys)
+            {
+                query[item] = dict[item];
+            }
+            return query.ToString().Trim('?');
+        }
+        static string http_build_query(IEnumerable<KeyValuePair<string, string>> dict = null)
+        {
+            if (dict == null)
+            {
+                return "";
+            }
+            var builder = new UriBuilder();
+            var query = HttpUtility.ParseQueryString(builder.Query);
+            foreach (var kv in dict)
+            {
+                query[kv.Key] = kv.Value;
+            }
+            return query.ToString().Trim('?');
+        }
+
+        public static string MD5Encrypt(string password)
+        {
+            MD5CryptoServiceProvider md5Hasher = new MD5CryptoServiceProvider();
+            byte[] hashedDataBytes;
+            hashedDataBytes = md5Hasher.ComputeHash(Encoding.UTF8.GetBytes(password));
+            StringBuilder tmp = new StringBuilder();
+            foreach (byte i in hashedDataBytes)
+            {
+                tmp.Append(i.ToString("x2"));
+            }
+            return tmp.ToString();
+        }
+        public static string Sign(Dictionary<string,string> dic, string secret)
+        {
+            var lstParams = dic.Select(kv => kv);
+            lstParams.OrderBy(kv => kv.Key);
+
+            var strParams = http_build_query(lstParams);
+            var md5 = MD5Encrypt(strParams + secret);
+            return md5;
         }
     }
 }
