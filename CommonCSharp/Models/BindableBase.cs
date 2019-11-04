@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CommonCSharp.Helpers;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -27,9 +28,9 @@ namespace CommonCSharp.Models
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(pPropertyName));
         }
-        protected void SetValue(object value)
+        protected void SetValue(object value, [CallerMemberName] string propertyName = "")
         {
-            string propertyName = GetProperyName(new StackTrace(true).GetFrame(1).GetMethod().Name);
+            //string propertyName = GetProperyName(new StackTrace(true).GetFrame(1).GetMethod().Name);
 
             if (dict.ContainsKey(propertyName))
             {
@@ -49,9 +50,9 @@ namespace CommonCSharp.Models
             }
         }
 
-        protected object GetValue()
+        protected object GetValue([CallerMemberName] string propertyName = "")
         {
-            string propertyName = GetProperyName(new StackTrace(true).GetFrame(1).GetMethod().Name);
+            //string propertyName = GetProperyName(new StackTrace(true).GetFrame(1).GetMethod().Name);
             if (dict.ContainsKey(propertyName))
             {
                 return dict[propertyName];
